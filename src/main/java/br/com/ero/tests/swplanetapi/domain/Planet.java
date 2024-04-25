@@ -1,5 +1,7 @@
 package br.com.ero.tests.swplanetapi.domain;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,6 +21,13 @@ public class Planet {
 
 
   
+  public Planet(String name, String climate, String terrain) {
+    this.name = name;
+    this.climate = climate;
+    this.terrain = terrain;
+  }
+
+
   public Long getId() {
     return id;
   }
@@ -44,5 +53,10 @@ public class Planet {
     this.terrain = terrain;
   }
 
+
+  @Override
+  public boolean equals(Object obj){
+    return EqualsBuilder.reflectionEquals(obj, this);
+  }
   
 }
