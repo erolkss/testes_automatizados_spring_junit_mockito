@@ -14,10 +14,10 @@ import java.util.Optional;
 
 import static br.com.ero.tests.swplanetapi.common.PlanetConstants.INVALID_PLANET;
 import static br.com.ero.tests.swplanetapi.common.PlanetConstants.PLANET;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class PlanetServiceTest {
@@ -98,5 +98,18 @@ public class PlanetServiceTest {
 
         assertThat(sut).isEmpty();
     }
+
+    @Test
+    public void removePlanet_WithExistingId_doesNotThrowAnyException(){
+        assertThatCode(() -> planetService.remove(1L)).doesNotThrowAnyException();
+    }
+
+    @Test
+    public void removePlanet_WithNoneExistingId_ThrowsException(){
+        doThrow(new RuntimeException()).when(planetRepository).deleteById(99L);
+
+        assertThatThrownBy(() -> planetService.remove(99L)).isInstanceOf(RuntimeException.class);
+    }
+
 
 }
