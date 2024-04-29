@@ -12,6 +12,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static br.com.ero.tests.swplanetapi.common.PlanetConstants.PLANET;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -65,4 +68,21 @@ public class PlanetControllerTest {
 
     }
 
+
+    @Test
+    public void getPlanet_ByExistingId_ReturnsPlanet() throws Exception{
+        when(planetService.get(1L)).thenReturn(Optional.of(PLANET));
+
+        mockMvc.perform(get("/planets/{id}", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(PLANET));
+    }
+
+    @Test
+    public void getPlanet_ByNotExistingId_ReturnsEmpty() throws Exception{
+        mockMvc.perform(get("/planets/{id}", 2)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").doesNotExist())
+                .andExpect(status().isNotFound());
+    }
 }

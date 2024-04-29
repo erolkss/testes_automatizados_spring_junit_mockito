@@ -1,13 +1,15 @@
 package br.com.ero.tests.swplanetapi.domain;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import java.util.Optional;
+
 import static br.com.ero.tests.swplanetapi.common.PlanetConstants.PLANET;
+import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 public class PlanetRepositoryTest {
@@ -17,6 +19,11 @@ public class PlanetRepositoryTest {
 
     @Autowired
     private TestEntityManager testEntityManager;
+
+    @AfterEach
+    public void afterEach(){
+        PLANET.setId(null);
+    }
 
     @Test
     public void createPlanet_WithValidData_ReturnsPlanet() {
@@ -32,19 +39,35 @@ public class PlanetRepositoryTest {
 
     @Test
     public void createPlanet_WithInvalidData_ThrowsException() {
-      Planet emptyPlanet = new Planet();
-      Planet invalidPlanet = new Planet("", "", "");
+        Planet emptyPlanet = new Planet();
+        Planet invalidPlanet = new Planet("", "", "");
 
-      assertThatThrownBy(() -> planetRepository.save(emptyPlanet)).isInstanceOf(RuntimeException.class);
-      assertThatThrownBy(() -> planetRepository.save(invalidPlanet)).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> planetRepository.save(emptyPlanet)).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> planetRepository.save(invalidPlanet)).isInstanceOf(RuntimeException.class);
     }
 
     @Test
-    public void createPlanet_WithExistingName_TrowsException(){
+    public void createPlanet_WithExistingName_TrowsException() {
         Planet planet = testEntityManager.persistFlushFind(PLANET);
         testEntityManager.detach(planet);
         planet.setId(null);
 
         assertThatThrownBy(() -> planetRepository.save(planet)).isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    public void getPlanet_ByExistingId_ReturnsPlanet() {
+        Planet planet = testEntityManager.persistFlushFind(PLANET);
+
+        Optional<Planet> planetOpt = planetRepository.findById(planet.getId());
+
+        assertThat(planetOpt).isNotEmpty();
+        assertThat(planetOpt.get()).isEqualTo(planet);
+    }
+
+    @Test
+    public void getPlanet_ByNotExistingId_ReturnsEmpty() {
+        Optional<Planet> planetOpt = planetRepository.findById(1L);
+        assertThat(planetOpt).isEmpty();
     }
 }
