@@ -16,8 +16,8 @@ import static br.com.ero.tests.swplanetapi.common.PlanetConstants.INVALID_PLANET
 import static br.com.ero.tests.swplanetapi.common.PlanetConstants.PLANET;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class PlanetServiceTest {
