@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import static br.com.ero.tests.swplanetapi.common.PlanetConstants.PLANET;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 
 @DataJpaTest
@@ -21,7 +21,7 @@ public class PlanetRepositoryTest {
 
     @Test
     public void createPlanet_WithValidData_ReturnsPlanet() {
-        Planet  planet = planetRepository.save(PLANET);
+        Planet planet = planetRepository.save(PLANET);
 
         Planet sut = testEntityManager.find(Planet.class, planet.getId());
 
@@ -30,5 +30,15 @@ public class PlanetRepositoryTest {
         assertThat(sut.getClimate()).isEqualTo(PLANET.getClimate());
         assertThat(sut.getTerrain()).isEqualTo(PLANET.getTerrain());
     }
+
+    @Test
+    public void createPlanet_WithInvalidData_ThrowsException() {
+        Planet emptyPlanet = new Planet();
+        Planet invalidPlanet = new Planet("", "", "");
+
+        assertThatThrownBy(() -> planetRepository.save(emptyPlanet)).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> planetRepository.save(invalidPlanet)).isInstanceOf(RuntimeException.class);
+    }
+
 
 }
