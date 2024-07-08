@@ -1,10 +1,11 @@
 package br.com.ero.tests.swplanetapi.web;
 
 import br.com.ero.tests.swplanetapi.domain.Planet;
+import br.com.ero.tests.swplanetapi.domain.PlanetRepository;
 import br.com.ero.tests.swplanetapi.domain.PlanetService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -12,11 +13,14 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import java.util.Optional;
+
 import static br.com.ero.tests.swplanetapi.common.PlanetConstants.PLANET;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @WebMvcTest(PlanetController.class)
@@ -30,6 +34,9 @@ public class PlanetControllerTest {
 
   @MockBean
   private PlanetService planetService;
+
+  @Mock
+  private PlanetRepository planetRepository;
 
   @Test
   public void createPlanet_WithValidData_ReturnsCreated() throws Exception {
@@ -68,6 +75,29 @@ public class PlanetControllerTest {
                     .content(objectMapper.writeValueAsString(PLANET))
                     .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isConflict());
+
+  }
+
+  @Test
+  public void getPlanet_ByExistingId_ReturnsPlanet() throws Exception {
+    when(planetService.get(1L)).thenReturn(Optional.of(PLANET));
+
+    mockMvc.perform(get("/planets/{id}", 1)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").exists())
+            .andExpect(jsonPath("$").value(PLANET));
+
+  }
+
+  @Test
+  public void getPlanet_NonExistingId_ReturnsNotFound() throws Exception {
+    when(planetService.get(2L)).thenReturn(Optional.empty());
+
+    mockMvc.perform(get("/planets/{id}", 2)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$").doesNotExist());
 
   }
 
