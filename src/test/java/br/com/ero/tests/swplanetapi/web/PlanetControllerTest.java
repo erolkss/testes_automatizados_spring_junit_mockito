@@ -1,5 +1,6 @@
 package br.com.ero.tests.swplanetapi.web;
 
+import br.com.ero.tests.swplanetapi.domain.Planet;
 import br.com.ero.tests.swplanetapi.domain.PlanetService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,4 +40,24 @@ public class PlanetControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$").value(PLANET));
     }
+
+    @Test
+    public void createPlanet_WithInvalidData_ReturnsUnprocessableEntity() throws Exception {
+        Planet emptyPlanet = new Planet();
+        Planet invalidPlanet = new Planet("", "", "");
+
+        when(planetService.create(PLANET)).thenReturn(PLANET);
+
+        mockMvc.perform(post("/planets")
+                        .content(objectMapper.writeValueAsString(emptyPlanet))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnprocessableEntity());
+
+        mockMvc.perform(post("/planets")
+                        .content(objectMapper.writeValueAsString(invalidPlanet))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+
 }
