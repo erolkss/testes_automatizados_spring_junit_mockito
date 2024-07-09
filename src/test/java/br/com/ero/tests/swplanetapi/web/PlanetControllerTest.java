@@ -101,5 +101,27 @@ public class PlanetControllerTest {
 
   }
 
+  @Test
+  public void getPlanet_ByExistingName_ReturnsPlanet() throws Exception {
+    when(planetService.getByName("name")).thenReturn(Optional.of(PLANET));
+
+    mockMvc.perform(get("/planets/name/{name}", PLANET.getName())
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").exists())
+            .andExpect(jsonPath("$").value(PLANET));
+  }
+
+  @Test
+  public void getPlanet_NonExistingName_ReturnsPlanet() throws Exception {
+    when(planetService.getByName("nameError")).thenReturn(Optional.empty());
+
+    mockMvc.perform(get("/planets/name/{name}", "nameError")
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$").doesNotExist());
+
+  }
+
 
 }
