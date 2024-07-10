@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Example;
 
 import java.util.ArrayList;
@@ -99,7 +100,7 @@ public class PlanetServiceTest {
 
     @Test
     public void listPlanets_ReturnsNoPlanets() {
-        when(planetRepository.findAll(any())).thenReturn(Collections.emptyList());
+        when(planetRepository.findAll((Example<Planet>) any())).thenReturn(Collections.emptyList());
 
         List<Planet> sut = planetService.list(PLANET.getTerrain(), PLANET.getClimate());
 
@@ -113,7 +114,7 @@ public class PlanetServiceTest {
 
     @Test
     public void removePlanet_WithNonExistingId_ThrowsException() {
-        doThrow(new RuntimeException()).when(planetRepository).deleteById(99L);
+        doThrow(new EmptyResultDataAccessException(1)).when(planetRepository).deleteById(99L);
         assertThatThrownBy(() -> planetService.remove(99L)).isInstanceOf(RuntimeException.class);
     }
 
