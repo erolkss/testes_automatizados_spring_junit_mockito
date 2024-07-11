@@ -10,8 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
-import static br.com.ero.tests.swplanetapi.common.PlanetConstants.PLANET;
-import static br.com.ero.tests.swplanetapi.common.PlanetConstants.TATOOINE;
+import static br.com.ero.tests.swplanetapi.common.PlanetConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Sql(scripts = "/remove_planets.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -42,5 +41,34 @@ public class PlanetIT {
     assertThat(sut.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(sut.getBody()).isEqualTo(TATOOINE);
   }
+
+  @Test
+  public void getPlanetByName_ReturnsPlanet() {
+    ResponseEntity<Planet> sut = restTemplate.getForEntity("/planets/name/YavinIV", Planet.class);
+
+    assertThat(sut.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(sut.getBody()).isEqualTo(YAVINIV);
+  }
+
+  @Test
+  public void listPlanets_ReturnsAllPlanets() {
+
+  }
+
+  @Test
+  public void listPlanets_ByClimate_ReturnsPlanets() {
+
+  }
+
+  @Test
+  public void listPlanets_ByTerrain_ReturnsPlanets() {
+
+  }
+
+  @Test
+  public void removePlanet_ReturnsNoContent() {
+
+  }
+
 
 }
