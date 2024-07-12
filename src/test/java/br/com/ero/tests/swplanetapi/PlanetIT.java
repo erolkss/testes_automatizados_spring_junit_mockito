@@ -81,7 +81,15 @@ public class PlanetIT {
 
   @Test
   public void listPlanets_ByTerrain_ReturnsPlanets() {
+    ResponseEntity<Planet[]> sut = restTemplate.getForEntity(
+            "/planets?terrain=jungle, rainforests",
+            Planet[].class
+    );
 
+    assertThat(sut.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(sut.getBody()).isNotEmpty();
+    assertThat(sut.getBody()).hasSize(1);
+    assertThat(sut.getBody()[0]).isEqualTo(YAVINIV);
   }
 
   @Test
