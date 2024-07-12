@@ -34,9 +34,6 @@ public class PlanetService {
   }
 
   public void remove(Long id) {
-    if (planetRepository.findById(id).isPresent()) {
       planetRepository.deleteById(id);
-    }
-    throw new EmptyResultDataAccessException(1);
   }
 }
