@@ -94,7 +94,9 @@ public class PlanetIT {
 
   @Test
   public void removePlanet_ReturnsNoContent() {
+    ResponseEntity<Void> sut = restTemplate.exchange("/planets/2", HttpMethod.DELETE, HttpEntity.EMPTY, Void.class);
 
+    assertThat(sut.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
   }
 
 
