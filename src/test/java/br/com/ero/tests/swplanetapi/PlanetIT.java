@@ -68,7 +68,15 @@ public class PlanetIT {
 
   @Test
   public void listPlanets_ByClimate_ReturnsPlanets() {
+    ResponseEntity<Planet[]> sut = restTemplate.getForEntity(
+            "/planets?climate=temperate",
+            Planet[].class
+    );
 
+    assertThat(sut.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(sut.getBody()).isNotEmpty();
+    assertThat(sut.getBody()).hasSize(1);
+    assertThat(sut.getBody()[0]).isEqualTo(ALDERAAN);
   }
 
   @Test
